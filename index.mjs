@@ -1,17 +1,29 @@
 import http from 'http';  // Importa il modulo http
 import fs from 'fs';      // modulo fs per leggere il file json
 import path from 'path';
-import { fileURLToPath } from 'url';
+import {  fileURLToPath } from 'url';
 
 import mappings from './mappings.mjs';
+
+function searchKey(obj, str) {
+  for (let key of Object.keys(obj)) {
+    if (key.includes(str)) {
+      return obj[key];
+    }
+  }
+  return null;
+}
 
 // Crea un server http
 const server = http.createServer((req, res) => {
   // Ottieni il path e il metodo della richiesta usando il destructuring
   const { url: requestPath, method: requestMethod } = req;
 
+  // si rimuovono i parametri di query dall'url
+  let requestPathNoQueryParams = requestPath.split("?")[0]
+
   // Cerca l'oggetto corrispondente al path della richiesta nell'oggetto mappings usando l'operatore []
-  let mapping = mappings[requestPath];
+  let mapping = searchKey(mappings, requestPathNoQueryParams);
   
   // Controlla se la corrisponde esiste
   if (mapping) {
